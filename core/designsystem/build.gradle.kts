@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.viktorger.feature.home"
+    namespace = "com.viktorger.core.designsystem"
     compileSdk = 34
 
     defaultConfig {
@@ -31,14 +31,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-    implementation(project(":core:designsystem"))
 
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
