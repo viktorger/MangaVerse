@@ -15,3 +15,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "MangaVerse"
 include(":app")
+include(":feature:home")
+include(":core:data")
+include(":feature:library")
