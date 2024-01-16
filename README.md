@@ -1,0 +1,2 @@
+# MangaVerse
+Manga parsing app
