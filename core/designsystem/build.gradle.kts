@@ -34,10 +34,13 @@ android {
 }
 
 dependencies {
+    api(libs.core.ktx)
+    api(libs.appcompat)
+    api(libs.material)
+    api(libs.constraintlayout)
+    api(libs.androidx.navigation.fragment.ktx)
+    api(libs.androidx.navigation.ui.ktx)
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
