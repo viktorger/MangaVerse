@@ -31,7 +31,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:lines="2"
+            app:layout_constrainedWidth="true"
+            android:ellipsize="end"
             tools:text="@string/manga_title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_marginTop="2dp"
+            android:breakStrategy="high_quality"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +47,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="@string/manga_type"
+            android:maxLines="2"
+            android:breakStrategy="high_quality"
+
             app:layout_constraintTop_toBottomOf="@id/tv_item_manga_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
