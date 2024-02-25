@@ -58,6 +58,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             dependencies {
                 "implementation"(project(":feature:home"))
                 "implementation"(project(":feature:library"))
+                "implementation"(project(":core:data"))
+                "implementation"(project(":core:network"))
                 "implementation"(project(":core:designsystem"))
             }
         }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="manga_shortcut_image">Manga shortcut image</string>
+    <string name="manga_title">Восхождение в тени</string>
+    <string name="manga_type">Манга</string>
+</resources>

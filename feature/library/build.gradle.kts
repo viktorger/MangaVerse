@@ -4,12 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.viktorger.feature.library"
+    namespace = "com.viktorger.mangaverse.feature.library"
 }
 
 dependencies {
-
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

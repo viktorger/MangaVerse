@@ -5,10 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.viktorger.feature.home"
+    namespace = "com.viktorger.mangaverse.feature.home"
 }
 
 dependencies {
+    implementation(project(":core:ui"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

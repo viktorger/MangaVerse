@@ -7,12 +7,12 @@ class AndroidDaggerConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("kotlin-kapt")
+                apply("com.google.devtools.ksp")
             }
 
             dependencies {
                 "implementation"(libs.findLibrary("dagger").get())
-                "kapt"(libs.findLibrary("dagger.compiler").get())
+                "ksp"(libs.findLibrary("dagger.compiler").get())
             }
         }
     }

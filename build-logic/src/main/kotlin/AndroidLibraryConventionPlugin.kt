@@ -47,6 +47,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             }
 
+            dependencies {
+                "implementation"(libs.findLibrary("coroutines.core").get())
+            }
         }
     }
 }

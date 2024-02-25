@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MangaVerse</string>
+    <string name="library_fragment_title">Library</string>
 </resources>
