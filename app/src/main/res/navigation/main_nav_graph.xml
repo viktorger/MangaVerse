@@ -8,10 +8,26 @@
         android:id="@+id/homeFragment"
         android:name="com.viktorger.mangaverse.feature.home.HomeFragment"
         tools:layout="@layout/fragment_home"
-        android:label="@string/home_fragment_title" />
+        android:label="@string/home_fragment_title" >
+        <action
+            android:id="@+id/action_homeFragment_to_mangaDescriptionFragment"
+            app:destination="@id/mangaDescriptionFragment" />
+    </fragment>
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.viktorger.mangaverse.feature.library.LibraryFragment"
         tools:layout="@layout/fragment_library"
         android:label="@string/library_fragment_title" />
+    <fragment
+        android:id="@+id/mangaDescriptionFragment"
+        android:name="com.viktorger.mangaverse.manga_description.MangaDescriptionFragment"
+        android:label="MangaDescriptionFragment" >
+
+        <argument
+            android:name="mangaUrl"
+            app:argType="string" />
+        <deepLink
+            app:uri="android-app://com.viktorger.mangaverse/mangaDescriptionFragment/{mangaUrl}"/>
+
+    </fragment>
 </navigation>

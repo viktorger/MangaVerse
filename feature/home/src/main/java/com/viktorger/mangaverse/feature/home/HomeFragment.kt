@@ -2,12 +2,14 @@ package com.viktorger.mangaverse.feature.home
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.fragment.findNavController
 import com.viktorger.mangaverse.core.ui.adapters.MangaShortcutAdapter
 import com.viktorger.mangaverse.feature.home.databinding.FragmentHomeBinding
 import com.viktorger.mangaverse.feature.home.di.HomeComponent
@@ -26,7 +28,15 @@ class HomeFragment : Fragment() {
     lateinit var vmFactory: HomeViewModelFactory
     private val vm: HomeViewModel by viewModels { vmFactory }
 
-    private val adapter: MangaShortcutAdapter by lazy { MangaShortcutAdapter() }
+    private val adapter: MangaShortcutAdapter by lazy {
+        MangaShortcutAdapter {
+            val request = NavDeepLinkRequest.Builder
+                .fromUri("android-app://com.viktorger.mangaverse/mangaDescriptionFragment/${it.drop(1)}".toUri())
+                .build()
+
+            findNavController().navigate(request)
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -51,6 +61,11 @@ class HomeFragment : Fragment() {
         vm.doSmth()
         initRecycler()
         initListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initListeners() {

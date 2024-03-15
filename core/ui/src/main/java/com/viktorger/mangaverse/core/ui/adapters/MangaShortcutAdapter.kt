@@ -5,16 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.bumptech.glide.Glide
 import com.viktorger.mangaverse.core.model.MangaShortcut
 import com.viktorger.mangaverse.core.ui.databinding.ItemMangaBinding
 
-class MangaShortcutAdapter : ListAdapter<MangaShortcut, MangaShortcutAdapter.ViewHolder>(MangaShortcutDiffUtil()) {
+class MangaShortcutAdapter(
+    private val onClick: (mangaDetailsUrl: String) -> Unit
+) : ListAdapter<MangaShortcut, MangaShortcutAdapter.ViewHolder>(MangaShortcutDiffUtil()) {
 
     private class MangaShortcutDiffUtil : DiffUtil.ItemCallback<MangaShortcut>() {
         override fun areItemsTheSame(oldItem: MangaShortcut, newItem: MangaShortcut): Boolean =
-            oldItem.url == newItem.url
+            oldItem.detailsUrl == newItem.detailsUrl
 
         override fun areContentsTheSame(oldItem: MangaShortcut, newItem: MangaShortcut): Boolean =
             oldItem == newItem
@@ -23,7 +24,10 @@ class MangaShortcutAdapter : ListAdapter<MangaShortcut, MangaShortcutAdapter.Vie
     class ViewHolder(
         private val binding: ItemMangaBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: MangaShortcut) {
+        fun bind(item: MangaShortcut, onClick: (mangaDetailsUrl: String) -> Unit) {
+            binding.root.setOnClickListener {
+                onClick(item.detailsUrl)
+            }
             binding.tvItemMangaTitle.text = item.title
             binding.tvItemMangaType.text = item.genres
 
@@ -44,5 +48,5 @@ class MangaShortcutAdapter : ListAdapter<MangaShortcut, MangaShortcutAdapter.Vie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onClick)
 }

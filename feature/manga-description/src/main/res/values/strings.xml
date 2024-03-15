@@ -1,0 +1,8 @@
+<resources>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="manga_cover_description">Manga cover image</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris viverra urna eu gravida hendrerit. Suspendisse lobortis non turpis vel ullamcorper. Ut dolor odio, sagittis vel pellentesque sed, ultrices quis nunc. Aliquam porttitor imperdiet malesuada. Fusce dapibus lobortis accumsan. In faucibus sollicitudin enim vitae aliquet. Aliquam ut euismod ipsum. Praesent at ullamcorper erat. Nunc accumsan ipsum in elit molestie ullamcorper. Nullam finibus sed ante id feugiat. Praesent eu malesuada lacus. Sed eu massa lobortis ante laoreet vestibulum ac non arcu.\n\nProin malesuada lacus vel nulla consequat dignissim. Praesent tempus, felis at aliquet interdum, metus mauris venenatis erat, vel tempor ipsum justo vel orci. Nullam ipsum justo, elementum vitae libero in, tempus ornare libero. Aenean venenatis euismod massa, vitae ornare justo laoreet iaculis. In non consequat enim, vel finibus mi. Vestibulum congue gravida lacinia. Suspendisse potenti. Proin dignissim, purus in tristique vehicula, ipsum enim blandit neque, non ornare ex diam quis tortor. Aenean vestibulum, metus vel sollicitudin euismod, purus lacus condimentum mi, eu mattis dui turpis nec lectus. Duis eget dolor id magna lobortis bibendum. Proin in sem metus. Sed a mattis felis. Quisque luctus auctor justo vel porttitor. In efficitur mattis rhoncus.</string>
+    <string name="chapters_headline">Главы</string>
+    <string name="chapter_number">Глава 1</string>
+</resources>

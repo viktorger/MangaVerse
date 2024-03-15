@@ -16,7 +16,7 @@ dependencies {
     implementation(project(":core:model"))
 
     implementation(libs.glide)
-    ksp(libs.glide.ksp)
+    // ksp(libs.glide.ksp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

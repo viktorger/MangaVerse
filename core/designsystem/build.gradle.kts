@@ -14,6 +14,7 @@ dependencies {
     api(libs.constraintlayout)
     api(libs.androidx.navigation.fragment.ktx)
     api(libs.androidx.navigation.ui.ktx)
+    api(libs.recyclerview)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

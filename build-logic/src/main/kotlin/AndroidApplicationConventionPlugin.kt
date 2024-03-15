@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import com.viktorger.mangaverse.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -58,6 +57,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             dependencies {
                 "implementation"(project(":feature:home"))
                 "implementation"(project(":feature:library"))
+                "implementation"(project(":feature:manga-description"))
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:network"))
                 "implementation"(project(":core:designsystem"))
