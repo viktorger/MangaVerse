@@ -6,20 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import com.viktorger.mangaverse.core.ui.adapters.MangaShortcutAdapter
 import com.viktorger.mangaverse.feature.home.databinding.FragmentHomeBinding
 import com.viktorger.mangaverse.feature.home.di.HomeComponent
 import com.viktorger.mangaverse.feature.home.di.HomeComponentProvider
+import com.viktorger.mangaverse.feature.home.navigation.HomeNavigation
 import javax.inject.Inject
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeComponent: HomeComponent
+
+    @Inject
+    lateinit var homeNavigation: HomeNavigation
 
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding get() = _binding!!
@@ -30,20 +32,16 @@ class HomeFragment : Fragment() {
 
     private val adapter: MangaShortcutAdapter by lazy {
         MangaShortcutAdapter {
-            val request = NavDeepLinkRequest.Builder
-                .fromUri("android-app://com.viktorger.mangaverse/mangaDescriptionFragment/${it.drop(1)}".toUri())
-                .build()
-
-            findNavController().navigate(request)
+            homeNavigation.navigateToDescription(it) { action ->
+                findNavController().navigate(action)
+            }
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
         homeComponent = (requireActivity().applicationContext as HomeComponentProvider)
             .provideHomeComponent()
-
         homeComponent.inject(this)
     }
 

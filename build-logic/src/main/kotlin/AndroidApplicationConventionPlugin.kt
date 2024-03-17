@@ -58,6 +58,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 "implementation"(project(":feature:home"))
                 "implementation"(project(":feature:library"))
                 "implementation"(project(":feature:manga-description"))
+                "implementation"(project(":feature:read"))
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:network"))
                 "implementation"(project(":core:designsystem"))

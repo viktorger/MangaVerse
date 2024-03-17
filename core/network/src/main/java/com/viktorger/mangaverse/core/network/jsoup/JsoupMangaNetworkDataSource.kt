@@ -1,7 +1,9 @@
 package com.viktorger.mangaverse.core.network.jsoup
 
-import com.viktorger.mangaverse.common.util.BASE_URL
+import android.util.Log
+import com.viktorger.mangaverse.common.BASE_URL
 import com.viktorger.mangaverse.core.model.MangaChapter
+import com.viktorger.mangaverse.core.model.MangaChapterShortcut
 import com.viktorger.mangaverse.core.model.MangaDetails
 import com.viktorger.mangaverse.core.model.MangaShortcut
 import com.viktorger.mangaverse.core.model.ResultModel
@@ -60,13 +62,13 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
         )
     }
 
-    override suspend fun getChapters(mangaUrl: String): ResultModel<List<MangaChapter>> = callForResult {
+    override suspend fun getChaptersShortcuts(mangaUrl: String): ResultModel<List<MangaChapterShortcut>> = callForResult {
         val doc = Jsoup.connect("$BASE_URL$mangaUrl")
             .userAgent("Chrome/4.0.249.0 Safari/532.5")
             .parser(Parser.xmlParser())
             .get()
 
-        val chapterList: MutableList<MangaChapter> = mutableListOf()
+        val chapterList: MutableList<MangaChapterShortcut> = mutableListOf()
         doc.select("tr.item-row").forEach {
             val volume = it.attr("data-vol")
 
@@ -74,7 +76,7 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
             val chapter = url.substringAfterLast("/")
             val date = it.select("td.date").attr("data-date")
 
-            chapterList.add(MangaChapter(
+            chapterList.add(MangaChapterShortcut(
                 volume = volume,
                 chapter = chapter,
                 date = date,
@@ -82,6 +84,57 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
             ))
         }
         return@callForResult chapterList
+    }
+
+    override suspend fun getChapter(mangaUrl: String): ResultModel<MangaChapter> = callForResult {
+        val doc = Jsoup.connect("$BASE_URL$mangaUrl")
+            .userAgent("Chrome/4.0.249.0 Safari/532.5")
+            .parser(Parser.xmlParser())
+            .get()
+
+        val chapterTitle = doc.select("span.mobile-subtitle").text()
+
+        // Images Urls
+        var regex = """rm_h\.readerDoInit.*""".toRegex()
+
+        val lineWithImageUrl = regex.find(doc.toString())
+
+        regex = """\['(?<baseUrl>[^'"]*)','',"(?<filePath>[^'"]*)",\d+,\d+]""".toRegex()
+        val urlObjects = lineWithImageUrl?.let {
+            regex.findAll(it.value)
+        } ?: sequenceOf()
+
+        val imageUrlList = mutableListOf<String>()
+        urlObjects.forEach {
+            val baseUrl = it.groups["baseUrl"]?.value ?: ""
+            val filePath = it.groups["filePath"]?.value?.replace("amp;", "") ?: ""
+
+            val url = "$baseUrl$filePath"
+            imageUrlList.add(url)
+        }
+
+        // Prev/next page
+        val prevPageUrl = doc.select("span.input-group-prepend > a").attr("href").let {
+            if (it.endsWith("page=last")) {
+                it
+            } else {
+                null
+            }
+        }
+        val nextPageUrl = doc.select("span.input-group-append > a").attr("href").let {
+            if (it.endsWith("finish")) {
+                null
+            } else {
+                it
+            }
+        }
+
+        return@callForResult MangaChapter(
+            chapterTitle = chapterTitle,
+            pagesUrls = imageUrlList,
+            prevPageUrl = prevPageUrl,
+            nextPageUrl = nextPageUrl
+        )
     }
 
     private fun <T> callForResult(call: () -> T): ResultModel<T> = try {

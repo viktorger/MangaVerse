@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viktorger.mangaverse.core.data.repository.MangaRepository
-import com.viktorger.mangaverse.core.model.MangaChapter
+import com.viktorger.mangaverse.core.model.MangaChapterShortcut
 import com.viktorger.mangaverse.core.model.MangaDetails
 import com.viktorger.mangaverse.core.model.ResultModel
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +18,9 @@ class MangaDescriptionViewModel(private val mangaRepository: MangaRepository) : 
         MutableLiveData(ResultModel.Loading)
     val detailsLiveData: LiveData<ResultModel<MangaDetails>> = _detailsLiveData
 
-    private val _chaptersLiveData: MutableLiveData<ResultModel<List<MangaChapter>>> =
+    private val _chaptersLiveData: MutableLiveData<ResultModel<List<MangaChapterShortcut>>> =
         MutableLiveData(ResultModel.Loading)
-    val chaptersLiveData: LiveData<ResultModel<List<MangaChapter>>> = _chaptersLiveData
+    val chaptersLiveData: LiveData<ResultModel<List<MangaChapterShortcut>>> = _chaptersLiveData
 
     private var detailsJob: Job? = null
     private var chaptersJob: Job? = null
@@ -36,7 +36,7 @@ class MangaDescriptionViewModel(private val mangaRepository: MangaRepository) : 
     fun getMangaChapters(mangaUrl: String) {
         chaptersJob?.cancel()
         chaptersJob = viewModelScope.launch (Dispatchers.Default) {
-            val chapters = mangaRepository.getChapters(mangaUrl)
+            val chapters = mangaRepository.getChaptersShortcuts(mangaUrl)
             _chaptersLiveData.postValue(chapters)
         }
     }

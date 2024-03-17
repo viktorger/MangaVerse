@@ -9,8 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.ConcatAdapter
@@ -21,11 +23,15 @@ import com.viktorger.mangaverse.manga_description.adapters.ChaptersAdapter
 import com.viktorger.mangaverse.manga_description.databinding.FragmentMangaDescriptionBinding
 import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponent
 import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponentProvider
+import com.viktorger.mangaverse.manga_description.navigation.MangaDescriptionNavigation
 import javax.inject.Inject
 
 class MangaDescriptionFragment : Fragment() {
 
     private lateinit var mangaDescriptionComponent: MangaDescriptionComponent
+
+    @Inject
+    lateinit var mangaDescriptionNavigation: MangaDescriptionNavigation
 
     private var _binding: FragmentMangaDescriptionBinding? = null
     private val binding: FragmentMangaDescriptionBinding get() = _binding!!
@@ -38,14 +44,19 @@ class MangaDescriptionFragment : Fragment() {
         ChapterDescriptionAdapter()
     }
     private val chaptersAdapter: ChaptersAdapter by lazy {
-        ChaptersAdapter()
+        ChaptersAdapter {
+            mangaDescriptionNavigation.navigateToChapter(it) { action ->
+                findNavController().navigate(action)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        mangaDescriptionComponent = (requireActivity().applicationContext as MangaDescriptionComponentProvider)
-            .provideMangaDescriptionComponent()
+        mangaDescriptionComponent =
+            (requireActivity().applicationContext as MangaDescriptionComponentProvider)
+                .provideMangaDescriptionComponent()
         mangaDescriptionComponent.inject(this)
     }
 
@@ -63,16 +74,9 @@ class MangaDescriptionFragment : Fragment() {
         binding.tbDescription.setupWithNavController(findNavController())
         binding.tbDescription.title = ""
 
-
-        var mangaUrl = arguments?.getString("mangaUrl")
-        mangaUrl?.let {
-            mangaUrl = "/$mangaUrl"
-        }
-
-        mangaUrl?.let {
-            vm.getMangaDescription(it)
-            vm.getMangaChapters(it)
-        }
+        val mangaUrl = mangaDescriptionNavigation.getMangaUrl(requireArguments())
+        vm.getMangaDescription(mangaUrl)
+        vm.getMangaChapters(mangaUrl)
 
         initListeners()
         initRecycler()
@@ -95,6 +99,7 @@ class MangaDescriptionFragment : Fragment() {
                 is ResultModel.Loading -> {
 
                 }
+
                 is ResultModel.Success -> {
                     with(binding) {
                         tbDescription.title = it.data.title
@@ -106,6 +111,7 @@ class MangaDescriptionFragment : Fragment() {
                         descriptionAdapter.mangaDetails = it.data
                     }
                 }
+
                 is ResultModel.Error -> {
                     Log.d(MangaDescriptionFragment::class.simpleName, "${it.e.message}")
                 }
@@ -117,9 +123,11 @@ class MangaDescriptionFragment : Fragment() {
                 is ResultModel.Loading -> {
 
                 }
+
                 is ResultModel.Success -> {
                     chaptersAdapter.submitList(it.data)
                 }
+
                 is ResultModel.Error -> {
                     Log.d(MangaDescriptionFragment::class.simpleName, "${it.e.message}")
                 }
@@ -131,13 +139,20 @@ class MangaDescriptionFragment : Fragment() {
         binding.ablDescription.addOnOffsetChangedListener { _, verticalOffset ->
             if (binding.ctlDescription.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(
                     binding.ctlDescription
-                )) {
-                binding.tbDescription.navigationIcon?.setColorFilter(ContextCompat.getColor(requireContext(),
-                    com.viktorger.core.designsystem.R.color.black), PorterDuff.Mode.SRC_ATOP
+                )
+            ) {
+                binding.tbDescription.navigationIcon?.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        com.viktorger.core.designsystem.R.color.black
+                    ), PorterDuff.Mode.SRC_ATOP
                 )
             } else {
-                binding.tbDescription.navigationIcon?.setColorFilter(ContextCompat.getColor(requireContext(),
-                    com.viktorger.core.designsystem.R.color.white), PorterDuff.Mode.SRC_ATOP
+                binding.tbDescription.navigationIcon?.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        com.viktorger.core.designsystem.R.color.white
+                    ), PorterDuff.Mode.SRC_ATOP
                 )
             }
         }

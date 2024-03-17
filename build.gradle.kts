@@ -7,4 +7,12 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
 }
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
+    }
+}
 true // Needed to make the Suppress annotation work for the plugins block

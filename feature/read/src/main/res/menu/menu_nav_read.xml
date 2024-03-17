@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/previousPage"
+        android:title="Previous"
+        android:icon="@drawable/ic_arrow_prev" />
+
+    <item
+        android:id="@+id/settingsFragment"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings" />
+
+    <item
+        android:id="@+id/listFragment"
+        android:title="Chapters"
+        android:icon="@drawable/ic_list" />
+
+    <item
+        android:id="@+id/nextPage"
+        android:title="Next"
+        android:icon="@drawable/ic_arrow_next" />
+</menu>

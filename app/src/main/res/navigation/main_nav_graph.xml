@@ -21,13 +21,24 @@
     <fragment
         android:id="@+id/mangaDescriptionFragment"
         android:name="com.viktorger.mangaverse.manga_description.MangaDescriptionFragment"
+        tools:layout="@layout/fragment_manga_description"
         android:label="MangaDescriptionFragment" >
 
         <argument
             android:name="mangaUrl"
             app:argType="string" />
-        <deepLink
-            app:uri="android-app://com.viktorger.mangaverse/mangaDescriptionFragment/{mangaUrl}"/>
+        <action
+            android:id="@+id/action_mangaDescriptionFragment_to_readFragment"
+            app:destination="@id/readFragment" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/readFragment"
+        android:name="com.viktorger.mangaverse.feature.read.ReadFragment"
+        tools:layout="@layout/fragment_read"
+        android:label="ReadFragment" >
+        <argument
+            android:name="chapterUrl"
+            app:argType="string" />
     </fragment>
 </navigation>

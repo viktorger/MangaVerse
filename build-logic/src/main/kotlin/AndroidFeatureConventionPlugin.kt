@@ -25,6 +25,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation"(project(":core:designsystem"))
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:model"))
+                "implementation"(project(":core:ui"))
             }
         }
     }
