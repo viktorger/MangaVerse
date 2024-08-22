@@ -7,8 +7,8 @@ import com.viktorger.mangaverse.feature.home.di.HomeComponent
 import com.viktorger.mangaverse.feature.home.di.HomeComponentProvider
 import com.viktorger.mangaverse.feature.read.di.ReadComponent
 import com.viktorger.mangaverse.feature.read.di.ReadComponentProvider
-import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponent
-import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponentProvider
+import com.viktorger.mangaverse.manga_details.di.MangaDescriptionComponent
+import com.viktorger.mangaverse.manga_details.di.MangaDescriptionComponentProvider
 
 class MangaVerseApp : Application(), HomeComponentProvider, MangaDescriptionComponentProvider,
     ReadComponentProvider {

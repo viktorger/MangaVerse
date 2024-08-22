@@ -1,55 +1,62 @@
-package com.viktorger.mangaverse.manga_description
+package com.viktorger.mangaverse.manga_details
 
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.bumptech.glide.Glide
-import com.viktorger.mangaverse.core.model.ResultModel
-import com.viktorger.mangaverse.manga_description.adapters.ChapterDescriptionAdapter
-import com.viktorger.mangaverse.manga_description.adapters.ChaptersAdapter
-import com.viktorger.mangaverse.manga_description.databinding.FragmentMangaDescriptionBinding
-import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponent
-import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponentProvider
-import com.viktorger.mangaverse.manga_description.navigation.MangaDescriptionNavigation
+import com.viktorger.mangaverse.core.model.LceState
+import com.viktorger.mangaverse.core.ui.elm.ElmBaseFragment
+import com.viktorger.mangaverse.manga_details.adapters.ChapterDescriptionAdapter
+import com.viktorger.mangaverse.manga_details.adapters.ChaptersAdapter
+import com.viktorger.mangaverse.manga_details.databinding.FragmentMangaDetailsBinding
+import com.viktorger.mangaverse.manga_details.di.MangaDescriptionComponent
+import com.viktorger.mangaverse.manga_details.di.MangaDescriptionComponentProvider
+import com.viktorger.mangaverse.manga_details.navigation.MangaDetailsNavigation
+import money.vivid.elmslie.android.renderer.androidElmStore
+import money.vivid.elmslie.core.store.Store
 import javax.inject.Inject
 
-class MangaDescriptionFragment : Fragment() {
+
+class MangaDetailsFragment :
+    ElmBaseFragment<
+            MangaDetailsEvent,
+            MangaDetailsEffect,
+            MangaDetailsState>(R.layout.fragment_manga_details) {
 
     private lateinit var mangaDescriptionComponent: MangaDescriptionComponent
 
     @Inject
-    lateinit var mangaDescriptionNavigation: MangaDescriptionNavigation
+    lateinit var mangaDetailsNavigation: MangaDetailsNavigation
 
-    private var _binding: FragmentMangaDescriptionBinding? = null
-    private val binding: FragmentMangaDescriptionBinding get() = _binding!!
-
-    @Inject
-    lateinit var vmFactory: MangaDescriptionViewModelFactory
-    private val vm: MangaDescriptionViewModel by viewModels { vmFactory }
+    private var _binding: FragmentMangaDetailsBinding? = null
+    private val binding: FragmentMangaDetailsBinding get() = _binding!!
 
     private val descriptionAdapter: ChapterDescriptionAdapter by lazy {
         ChapterDescriptionAdapter()
     }
     private val chaptersAdapter: ChaptersAdapter by lazy {
         ChaptersAdapter {
-            mangaDescriptionNavigation.navigateToChapter(it) { action ->
+            mangaDetailsNavigation.navigateToChapter(it) { action ->
                 findNavController().navigate(action)
             }
         }
     }
+
+    @Inject
+    lateinit var elmStoreFactory: MangaDetailsStoreFactory
+
+    override val store: Store<
+            MangaDetailsEvent,
+            MangaDetailsEffect,
+            MangaDetailsState> by androidElmStore { elmStoreFactory.create() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -60,11 +67,19 @@ class MangaDescriptionFragment : Fragment() {
         mangaDescriptionComponent.inject(this)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val mangaUrl = mangaDetailsNavigation.getMangaUrl(requireArguments())
+        if (savedInstanceState == null) {
+            store.accept(MangaDetailsEvent.Ui.LoadDetails(mangaUrl))
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMangaDescriptionBinding.inflate(inflater, container, false)
+        _binding = FragmentMangaDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -74,11 +89,6 @@ class MangaDescriptionFragment : Fragment() {
         binding.tbDescription.setupWithNavController(findNavController())
         binding.tbDescription.title = ""
 
-        val mangaUrl = mangaDescriptionNavigation.getMangaUrl(requireArguments())
-        vm.getMangaDescription(mangaUrl)
-        vm.getMangaChapters(mangaUrl)
-
-        initListeners()
         initRecycler()
         // changeNavigateUpButtonColor()
     }
@@ -93,46 +103,27 @@ class MangaDescriptionFragment : Fragment() {
         _binding = null
     }
 
-    private fun initListeners() {
-        vm.detailsLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is ResultModel.Loading -> {
+    override fun render(state: MangaDetailsState) {
+        when (state.mangaDetails) {
+            is LceState.Content -> {
+                val details = state.mangaDetails.data
+                binding.tbDescription.title = details.title
+                Glide
+                    .with(requireContext())
+                    .load(details.imageUrl)
+                    .into(binding.ivDescription)
 
-                }
-
-                is ResultModel.Success -> {
-                    with(binding) {
-                        tbDescription.title = it.data.title
-                        Glide
-                            .with(requireContext())
-                            .load(it.data.imageUrl)
-                            .into(ivDescription)
-
-                        descriptionAdapter.mangaDetails = it.data
-                    }
-                }
-
-                is ResultModel.Error -> {
-                    Log.d(MangaDescriptionFragment::class.simpleName, "${it.e.message}")
-                }
+                descriptionAdapter.mangaDescription = details
+                chaptersAdapter.submitList(details.mangaChaptersShortcuts)
             }
+
+            is LceState.Error -> Unit
+            LceState.Loading -> Unit
         }
+    }
 
-        vm.chaptersLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is ResultModel.Loading -> {
+    override fun handleEffect(effect: MangaDetailsEffect): Unit {
 
-                }
-
-                is ResultModel.Success -> {
-                    chaptersAdapter.submitList(it.data)
-                }
-
-                is ResultModel.Error -> {
-                    Log.d(MangaDescriptionFragment::class.simpleName, "${it.e.message}")
-                }
-            }
-        }
     }
 
     private fun changeNavigateUpButtonColor() {

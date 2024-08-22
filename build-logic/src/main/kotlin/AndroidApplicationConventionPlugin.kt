@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.viktorger.mangaverse.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -57,11 +58,18 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             dependencies {
                 "implementation"(project(":feature:home"))
                 "implementation"(project(":feature:library"))
-                "implementation"(project(":feature:manga-description"))
+                "implementation"(project(":feature:manga-details"))
                 "implementation"(project(":feature:read"))
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:network"))
                 "implementation"(project(":core:designsystem"))
+                "implementation"(project(":core:ui"))
+                "implementation"(libs.findLibrary("elmslie.android").get())
+                "implementation"(libs.findLibrary("elmslie.core").get())
+
+                "implementation"(
+                    libs.findLibrary("github.viewbindingpropertydelegate.noreflection").get()
+                )
             }
         }
     }

@@ -1,14 +1,14 @@
 package com.viktorger.mangaverse.core.network.jsoup
 
-import android.util.Log
 import com.viktorger.mangaverse.common.BASE_URL
 import com.viktorger.mangaverse.core.model.MangaChapter
 import com.viktorger.mangaverse.core.model.MangaChapterShortcut
 import com.viktorger.mangaverse.core.model.MangaDetails
+import com.viktorger.mangaverse.core.network.model.MangaDescription
 import com.viktorger.mangaverse.core.model.MangaShortcut
-import com.viktorger.mangaverse.core.model.ResultModel
 import com.viktorger.mangaverse.core.network.MangaNetworkDataSource
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.parser.Parser
 import javax.inject.Inject
 
@@ -42,19 +42,32 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
         return mangaShortcutList
     }
 
-    override suspend fun getDetails(mangaUrl: String): ResultModel<MangaDetails> = callForResult {
+    override suspend fun getDetails(mangaUrl: String): MangaDetails {
         val doc = Jsoup.connect("$BASE_URL$mangaUrl")
             .userAgent("Chrome/4.0.249.0 Safari/532.5")
             .parser(Parser.xmlParser())
             .get()
 
+        val description = getDescription(doc)
+        val chaptersShortcuts = getChaptersShortcuts(doc)
+
+        return MangaDetails(
+            title = description.title,
+            genres = description.genres,
+            description = description.description,
+            imageUrl = description.imageUrl,
+            mangaChaptersShortcuts = chaptersShortcuts
+        )
+    }
+
+    private suspend fun getDescription(doc: Document): MangaDescription {
         val title = doc.select("h1.names > span.name").text()
         val desc = doc.select("div.manga-description").first()?.select("p,span,div")?.text()
         val genres = doc.select("p.elementList > a.badge.element-link")
             .joinToString(" ") { it.text() }
         val imageUrl = doc.select("div.picture-fotorama > img").first()?.attr("src")
 
-        return@callForResult MangaDetails(
+        return MangaDescription(
             title = title,
             description = desc ?: "",
             genres = genres,
@@ -62,31 +75,25 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
         )
     }
 
-    override suspend fun getChaptersShortcuts(mangaUrl: String): ResultModel<List<MangaChapterShortcut>> = callForResult {
-        val doc = Jsoup.connect("$BASE_URL$mangaUrl")
-            .userAgent("Chrome/4.0.249.0 Safari/532.5")
-            .parser(Parser.xmlParser())
-            .get()
+    private suspend fun getChaptersShortcuts(doc: Document):
+            List<MangaChapterShortcut> = doc.select("tr.item-row").map {
 
-        val chapterList: MutableList<MangaChapterShortcut> = mutableListOf()
-        doc.select("tr.item-row").forEach {
-            val volume = it.attr("data-vol")
+        val volume = it.attr("data-vol")
 
-            val url = it.select("a.chapter-link").attr("href")
-            val chapter = url.substringAfterLast("/")
-            val date = it.select("td.date").attr("data-date")
+        val url = it.select("a.chapter-link").attr("href")
+        val chapter = url.substringAfterLast("/")
+        val date = it.select("td.date").attr("data-date")
 
-            chapterList.add(MangaChapterShortcut(
-                volume = volume,
-                chapter = chapter,
-                date = date,
-                url = url
-            ))
-        }
-        return@callForResult chapterList
+        MangaChapterShortcut(
+            volume = volume,
+            chapter = chapter,
+            date = date,
+            url = url
+        )
+
     }
 
-    override suspend fun getChapter(mangaUrl: String): ResultModel<MangaChapter> = callForResult {
+    override suspend fun getChapter(mangaUrl: String): MangaChapter {
         val doc = Jsoup.connect("$BASE_URL$mangaUrl")
             .userAgent("Chrome/4.0.249.0 Safari/532.5")
             .parser(Parser.xmlParser())
@@ -94,26 +101,8 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
 
         val chapterTitle = doc.select("span.mobile-subtitle").text()
 
-        // Images Urls
-        var regex = """rm_h\.readerDoInit.*""".toRegex()
+        val imageUrlList = getImageUrls(doc)
 
-        val lineWithImageUrl = regex.find(doc.toString())
-
-        regex = """\['(?<baseUrl>[^'"]*)','',"(?<filePath>[^'"]*)",\d+,\d+]""".toRegex()
-        val urlObjects = lineWithImageUrl?.let {
-            regex.findAll(it.value)
-        } ?: sequenceOf()
-
-        val imageUrlList = mutableListOf<String>()
-        urlObjects.forEach {
-            val baseUrl = it.groups["baseUrl"]?.value ?: ""
-            val filePath = it.groups["filePath"]?.value?.replace("amp;", "") ?: ""
-
-            val url = "$baseUrl$filePath"
-            imageUrlList.add(url)
-        }
-
-        // Prev/next page
         val prevPageUrl = doc.select("span.input-group-prepend > a").attr("href").let {
             if (it.endsWith("page=last")) {
                 it
@@ -121,6 +110,7 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
                 null
             }
         }
+
         val nextPageUrl = doc.select("span.input-group-append > a").attr("href").let {
             if (it.endsWith("finish")) {
                 null
@@ -129,7 +119,7 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
             }
         }
 
-        return@callForResult MangaChapter(
+        return MangaChapter(
             chapterTitle = chapterTitle,
             pagesUrls = imageUrlList,
             prevPageUrl = prevPageUrl,
@@ -137,10 +127,34 @@ class JsoupMangaNetworkDataSource @Inject constructor() : MangaNetworkDataSource
         )
     }
 
-    private fun <T> callForResult(call: () -> T): ResultModel<T> = try {
-        ResultModel.Success(call())
-    } catch (e: Exception) {
-        ResultModel.Error(e)
+    private fun getImageUrls(doc: Document): List<String> {
+        var regex = regexToFindAllImages()
+
+        val lineWithImageUrl = regex.find(doc.toString())
+
+        regex = regexToExtractBaseUrlAndFilePath()
+        val urlObjects = lineWithImageUrl?.let {
+            regex.findAll(it.value)
+        } ?: sequenceOf()
+
+        val imageUrlList = extractImageUrlsFromRegexResults(urlObjects)
+        return imageUrlList
     }
+
+    private fun extractImageUrlsFromRegexResults(
+        urlObjects: Sequence<MatchResult>
+    ): List<String> = urlObjects.map {
+        val uncheckedBaseUrl = it.groups["baseUrl"]?.value ?: ""
+        val baseUrl = uncheckedBaseUrl.ifBlank { BASE_URL }
+        val filePath = it.groups["filePath"]?.value?.replace("amp;", "") ?: ""
+
+        "$baseUrl$filePath"
+    }.toList()
+
+    private fun regexToExtractBaseUrlAndFilePath() =
+        """\['(?<baseUrl>[^'"]*)','',"(?<filePath>[^'"]*)",\d+,\d+]""".toRegex()
+
+    private fun regexToFindAllImages() = """rm_h\.readerDoInit.*""".toRegex()
+
 }
 

@@ -26,6 +26,9 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:model"))
                 "implementation"(project(":core:ui"))
+                "implementation"(
+                    libs.findLibrary("github.viewbindingpropertydelegate.noreflection").get()
+                )
             }
         }
     }

@@ -5,11 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.viktorger.mangaverse.manga_description"
+    namespace = "com.viktorger.mangaverse.manga_details"
 }
 
 dependencies {
     implementation(libs.glide)
+    implementation(libs.elmslie.core)
+    implementation(libs.elmslie.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

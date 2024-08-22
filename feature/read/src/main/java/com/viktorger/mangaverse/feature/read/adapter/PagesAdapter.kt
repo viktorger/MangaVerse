@@ -1,28 +1,15 @@
 package com.viktorger.mangaverse.feature.read.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.Target
-import com.viktorger.mangaverse.core.model.MangaChapter
 import com.viktorger.mangaverse.feature.read.databinding.ItemPageBinding
 
 class PagesAdapter : RecyclerView.Adapter<PagesAdapter.PagesViewHolder>() {
-    /*class DiffUtilCallback : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
-            oldItem == newItem
-
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
-            oldItem == newItem
-    }*/
     @SuppressLint("NotifyDataSetChanged")
     var pages: List<String> = listOf()
         set(value) {
@@ -38,29 +25,13 @@ class PagesAdapter : RecyclerView.Adapter<PagesAdapter.PagesViewHolder>() {
         fun bind(pageUrl: String) {
             Glide.with(binding.root)
                 .load(pageUrl)
-                /*.listener(object:RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-
-                    @SuppressLint("NotifyDataSetChanged")
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        itemCount = (itemCount + 1).coerceAtMost(pages?.pagesUrls?.size ?: 0)
-                        notifyDataSetChanged()
-                        return false
-                    }
-                })*/
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .thumbnail(
+                    Glide.with(binding.root)
+                        .load(pageUrl)
+                        .sizeMultiplier(0.25f)
+                )
+                .override(Target.SIZE_ORIGINAL)
                 .into(binding.ivItempage)
         }
     }

@@ -1,3 +1,3 @@
 package com.viktorger.mangaverse.common
 
-const val BASE_URL = "https://readmanga.live"
+const val BASE_URL = "https://zt.readmanga.io/"

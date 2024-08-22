@@ -1,14 +1,12 @@
 package com.viktorger.mangaverse.core.network
 
 import com.viktorger.mangaverse.core.model.MangaChapter
-import com.viktorger.mangaverse.core.model.MangaChapterShortcut
 import com.viktorger.mangaverse.core.model.MangaDetails
+import com.viktorger.mangaverse.core.network.model.MangaDescription
 import com.viktorger.mangaverse.core.model.MangaShortcut
-import com.viktorger.mangaverse.core.model.ResultModel
 
 interface MangaNetworkDataSource {
     suspend fun getShortcutsPage(page: Int): List<MangaShortcut>
-    suspend fun getDetails(mangaUrl: String): ResultModel<MangaDetails>
-    suspend fun getChaptersShortcuts(mangaUrl: String): ResultModel<List<MangaChapterShortcut>>
-    suspend fun getChapter(mangaUrl: String): ResultModel<MangaChapter>
+    suspend fun getDetails(mangaUrl: String): MangaDetails
+    suspend fun getChapter(mangaUrl: String): MangaChapter
 }

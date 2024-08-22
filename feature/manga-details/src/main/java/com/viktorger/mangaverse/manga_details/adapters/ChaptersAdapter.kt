@@ -1,4 +1,4 @@
-package com.viktorger.mangaverse.manga_description.adapters
+package com.viktorger.mangaverse.manga_details.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.viktorger.mangaverse.core.model.MangaChapterShortcut
-import com.viktorger.mangaverse.manga_description.databinding.ItemChapterBinding
+import com.viktorger.mangaverse.manga_details.databinding.ItemChapterBinding
 
 class ChaptersAdapter(private val onClick: (String) -> Unit)
     : ListAdapter<MangaChapterShortcut, ChaptersAdapter.ChapterViewHolder>(DiffUtilCallback()) {
+
     class DiffUtilCallback() : DiffUtil.ItemCallback<MangaChapterShortcut>() {
         override fun areItemsTheSame(oldItem: MangaChapterShortcut, newItem: MangaChapterShortcut): Boolean =
             oldItem.url == newItem.url

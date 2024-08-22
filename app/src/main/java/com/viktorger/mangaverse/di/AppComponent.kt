@@ -4,7 +4,7 @@ import com.viktorger.mangaverse.core.data.di.DataModule
 import com.viktorger.mangaverse.core.network.di.NetworkModule
 import com.viktorger.mangaverse.feature.home.di.HomeComponent
 import com.viktorger.mangaverse.feature.read.di.ReadComponent
-import com.viktorger.mangaverse.manga_description.di.MangaDescriptionComponent
+import com.viktorger.mangaverse.manga_details.di.MangaDescriptionComponent
 import dagger.Component
 import javax.inject.Singleton
 

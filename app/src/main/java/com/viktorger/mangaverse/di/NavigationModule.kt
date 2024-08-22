@@ -6,9 +6,9 @@ import com.viktorger.mangaverse.feature.home.HomeFragmentDirections
 import com.viktorger.mangaverse.feature.home.navigation.HomeNavigation
 import com.viktorger.mangaverse.feature.read.ReadFragmentArgs
 import com.viktorger.mangaverse.feature.read.navigation.ReadNavigation
-import com.viktorger.mangaverse.manga_description.MangaDescriptionFragmentArgs
-import com.viktorger.mangaverse.manga_description.MangaDescriptionFragmentDirections
-import com.viktorger.mangaverse.manga_description.navigation.MangaDescriptionNavigation
+import com.viktorger.mangaverse.manga_details.MangaDetailsFragmentArgs
+import com.viktorger.mangaverse.manga_details.MangaDetailsFragmentDirections
+import com.viktorger.mangaverse.manga_details.navigation.MangaDetailsNavigation
 import dagger.Module
 import dagger.Provides
 
@@ -28,16 +28,16 @@ class NavigationModule {
     }
 
     @Provides
-    fun provideMangaDescriptionNavigation(): MangaDescriptionNavigation = object : MangaDescriptionNavigation {
+    fun provideMangaDescriptionNavigation(): MangaDetailsNavigation = object : MangaDetailsNavigation {
         override fun getMangaUrl(arguments: Bundle): String =
-            MangaDescriptionFragmentArgs.fromBundle(arguments).mangaUrl
+            MangaDetailsFragmentArgs.fromBundle(arguments).mangaUrl
 
         override fun navigateToChapter(
             chapterUrl: String,
             navigate: (action: NavDirections) -> Unit
         ) {
             val action =
-                MangaDescriptionFragmentDirections.actionMangaDescriptionFragmentToReadFragment(chapterUrl)
+                MangaDetailsFragmentDirections.actionMangaDescriptionFragmentToReadFragment(chapterUrl)
 
             navigate(action)
         }

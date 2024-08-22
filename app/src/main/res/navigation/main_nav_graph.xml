@@ -20,8 +20,8 @@
         android:label="@string/library_fragment_title" />
     <fragment
         android:id="@+id/mangaDescriptionFragment"
-        android:name="com.viktorger.mangaverse.manga_description.MangaDescriptionFragment"
-        tools:layout="@layout/fragment_manga_description"
+        android:name="com.viktorger.mangaverse.manga_details.MangaDetailsFragment"
+        tools:layout="@layout/fragment_manga_details"
         android:label="MangaDescriptionFragment" >
 
         <argument

@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.viktorger.mangaverse.core.model.ResultModel
+import com.viktorger.mangaverse.core.model.LceState
 import com.viktorger.mangaverse.feature.read.adapter.PagesAdapter
 import com.viktorger.mangaverse.feature.read.databinding.FragmentReadBinding
 import com.viktorger.mangaverse.feature.read.di.ReadComponent
@@ -69,10 +69,10 @@ class ReadFragment : Fragment() {
     private fun initListeners() {
         vm.chapterLiveData.observe(viewLifecycleOwner) {
             when (it) {
-                is ResultModel.Loading -> {
+                is LceState.Loading -> {
 
                 }
-                is ResultModel.Success -> {
+                is LceState.Content -> {
                     pagesAdapter.pages = it.data.pagesUrls
                     it.data.pagesUrls.forEach { url ->
                         Log.d(this::class.simpleName, url)
@@ -80,8 +80,8 @@ class ReadFragment : Fragment() {
 
 
                 }
-                is ResultModel.Error -> {
-                    Log.e(this::class.simpleName, "${it.e.message}")
+                is LceState.Error -> {
+                    Log.e(this::class.simpleName, "${it.throwable.message}")
                 }
             }
         }
